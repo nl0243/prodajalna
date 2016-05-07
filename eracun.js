@@ -142,7 +142,7 @@ var strankaIzRacuna = function(racunId, callback) {
     pb.all("SELECT Customer.* FROM Customer, Invoice \
             WHERE Customer.CustomerId = Invoice.CustomerId AND Invoice.InvoiceId = " + racunId,
     function(napaka, vrstice) {
-      console.log(vrstice);
+      callback(vrstice);
     })
 }
 
@@ -173,7 +173,13 @@ streznik.get('/izpisiRacun/:oblika', function(zahteva, odgovor) {
 streznik.get('/izpisiRacun', function(zahteva, odgovor) {
   odgovor.redirect('/izpisiRacun/html')
 })
-
+var trenutnaStranka = function(strankaID, callback){
+   pb.all("SELECT * FROM Customer WHERE Customer.CustomerId = " + strankaID,
+    function(napaka, vrstice) {
+      callback(napaka, vrstice);
+    }
+  );
+}
 // Vrni stranke iz podatkovne baze
 var vrniStranke = function(callback) {
   pb.all("SELECT * FROM Customer",
@@ -230,15 +236,12 @@ streznik.get('/prijava', function(zahteva, odgovor) {
 
 // Prikaz nakupovalne košarice za stranko
 streznik.post('/stranka', function(zahteva, odgovor) {
-  var form = new formidable.IncomingForm();
-  
-  form.parse(zahteva, function (napaka1, polja, datoteke) {
     odgovor.redirect('/')
-  });
 })
 
 // Odjava stranke
 streznik.post('/odjava', function(zahteva, odgovor) {
+  zahteva.session.kosarica = null;
     odgovor.redirect('/prijava') 
 })
 
