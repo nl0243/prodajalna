@@ -165,16 +165,14 @@ var strankaIzRacuna = function(racunId, callback) {
 // Izpis računa v HTML predstavitvi na podlagi podatkov iz baze
 streznik.post('/izpisiRacunBaza', function(zahteva, odgovor) {
   var form = new formidable.IncomingForm();
-  
   form.parse(zahteva, function (napaka1, polja, datoteke) {
     var racunId = polja.seznamRacunov;
-    var narocnik;
-    strankaIzRacuna(racunId, function(stranke){
-      
+
+    strankaIzRacuna(racunId, function(stranka){
       pesmiIzRacuna(racunId, function(pesmi) {
         odgovor.setHeader('content-type', 'text/xml');
         odgovor.render('eslog', {
-          narocnik: stranke[0],
+          stranka: stranka[0],
           vizualiziraj: true,
           postavkeRacuna: pesmi
         });
@@ -184,7 +182,7 @@ streznik.post('/izpisiRacunBaza', function(zahteva, odgovor) {
 })
 
 // Izpis računa v HTML predstavitvi ali izvorni XML obliki
-streznik.get('/izpisiRacun/:', function(zahteva, odgovor) {
+streznik.get('/izpisiRacun/:oblika', function(zahteva, odgovor) {
   pesmiIzKosarice(zahteva, function(pesmi) {
     if (!pesmi) {
       odgovor.sendStatus(500);
